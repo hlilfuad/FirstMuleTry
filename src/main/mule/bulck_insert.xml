@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ef2c9a1f-65ec-4f43-b7d8-15e62e8e5e19" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="MySQL80" doc:name="Database Config" doc:id="035741a9-3a91-4ed5-b744-f4fa9c5e7723" >
+		<db:my-sql-connection host="ec2-18-237-169-229.us-west-2.compute.amazonaws.com" port="3306" user="muler" password="Bootcamp@SF#1" database="fuad"/>
+	</db:config>
+	<flow name="bulck_insertFlow" doc:id="1c41dde9-d077-4094-9e7a-d713640f4f62" >
+		<http:listener doc:name="Listener" doc:id="1c1a46ee-2c00-42fa-9f06-c8ce7f71183a" config-ref="HTTP_Listener_config" path="/bulckinsert"/>
+		<ee:transform doc:name="Transform Message" doc:id="f324fa5f-a3bf-45a7-a58f-ff8c1d59f7c8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map( payload01,indexofpayload01)-> {
+	id : payload01.id,
+	name : payload01.name,
+	email : payload01.email
+}
+
+
+]]></ee:set-payload>
+				<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-attributes>
+			</ee:message>
+		</ee:transform>
+		<db:bulk-insert doc:id="91e1e8aa-555e-4df3-96ae-fe0996daca8d" config-ref="MySQL80">
+			<db:sql ><![CDATA[INSERT INTO Contacts (id,name,email) 
+VALUES(:id,:name,:email)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="596833e2-d333-4a20-80f5-efa17a970e33" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	"msgcode" : 200,
+	"message" : "success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

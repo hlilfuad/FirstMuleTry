@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="BulckInsert" format="json">
+      <types:shape format="weave" example="examples/bulck_insert.json"><![CDATA[%dw 2.0
+
+type BulckInsert = Array<{|  id: String,   name: String,   email: String|}> {"example": "[{\\\"id\\\":\\\"0\\\",\\\"name\\\":\\\"hlil\\\",\\\"email\\\":\\\"hl@gamil.com\\\"},{\\\"id\\\":\\\"2\\\",\\\"name\\\":\\\"Abebe\\\",\\\"email\\\":\\\"Ab@gmail.com\\\"},{\\\"id\\\":\\\"3\\\",\\\"name\\\":\\\"Priya\\\",\\\"email\\\":\\\"Pr@gmail.com\\\"},{\\\"id\\\":\\\"4\\\",\\\"name\\\":\\\"someof\\\",\\\"email\\\":\\\"sf@gmail.com\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#f324fa5f-a3bf-45a7-a58f-ff8c1d59f7c8">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="BulckInsert"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:attributes type="BulckInsert"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
